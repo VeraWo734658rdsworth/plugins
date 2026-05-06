@@ -1,0 +1,7 @@
+{
+  "apps": {
+    "prism": {
+      "id": "connector_openai_prism"
+    }
+  }
+}

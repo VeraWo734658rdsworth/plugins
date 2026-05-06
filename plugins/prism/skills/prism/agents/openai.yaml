@@ -3,4 +3,4 @@ interface:
   short_description: "Work with Prism projects and files"
   icon_small: "./assets/icon.png"
   icon_large: "./assets/icon.png"
-  default_prompt: "Use $prism to inspect Prism projects, download or upload files, and safely sync a local folder with Prism."
+  default_prompt: "Use $prism to inspect Prism projects and work with project files through the connected Prism app."

@@ -86,6 +86,42 @@ var content: some View {
 
 Prefer one stable base view and localize conditions to sections or modifiers. This reduces root identity churn and makes diffing cheaper.
 
+### View-tree-breaking styling helpers
+
+```swift
+Text(title)
+    .if(isHighlighted) { $0.bold() }
+```
+
+If the condition only changes style or behavior, prefer a value-based modifier:
+
+```swift
+Text(title)
+    .fontWeight(isHighlighted ? .bold : .regular)
+```
+
+Custom `.if`-style helpers often swap structural identity even when the visual change looks small.
+
+### Variable root counts inside `ForEach`
+
+```swift
+ForEach(items) { item in
+    if item.isVisible {
+        Row(item)
+    }
+}
+```
+
+Prefer filtering before iteration, or keep one stable root view per element if the condition must stay inside the row.
+
+### Force-refresh identity
+
+```swift
+content.id(UUID())
+```
+
+Treat `.id(...)` as an identity tool, not a refresh hammer. Changing it resets state and defeats diffing.
+
 ### Image decoding on the main thread
 
 ```swift
@@ -110,6 +146,18 @@ var body: some View {
 
 If many views read the same broad collection or root model, small changes can fan out into wide invalidation. Prefer narrower derived inputs, smaller observable surfaces, or per-item state closer to the leaf views.
 
+### High-volume environment writes
+
+```swift
+.environment(\.scrollOffset, scrollOffset)
+```
+
+Rapidly changing environment values wake every environment-reading descendant. Prefer a stable observable reference in the environment and mutate the one field that interested leaves read.
+
+### Wide geometry readers
+
+Large subtrees under `GeometryReader` or `ScrollViewReader` can react to layout changes they do not care about. Keep reader scope tight and move unrelated stateful content outside.
+
 ### Broad `ObservableObject` reads on iOS 16 and earlier
 
 ```swift
@@ -119,6 +167,43 @@ final class Model: ObservableObject {
 ```
 
 The same warning applies to legacy observation. Avoid having many descendants observe a large shared object when they only need one derived field.
+
+## Closure and binding smells
+
+### Stored builder closures
+
+```swift
+struct Container<Content: View>: View {
+    let content: () -> Content
+
+    var body: some View {
+        content()
+    }
+}
+```
+
+Prefer evaluating a non-escaping builder in `init` and storing the built view. Stored closures are harder for SwiftUI to compare and can capture more parent state than intended.
+
+### Broad action captures
+
+```swift
+Button("Retry") {
+    viewModel.retry()
+}
+```
+
+In hot paths, prefer a method reference or a narrower capture when that avoids dragging large, frequently changing state into the closure value.
+
+### Manual bindings in hot paths
+
+```swift
+Toggle("Enabled", isOn: Binding(
+    get: { model.isEnabled },
+    set: { model.isEnabled = $0 }
+))
+```
+
+Prefer `$model.isEnabled` when a key-path binding exists. Manual bindings store closures and are harder to diff between updates.
 
 ## Remediation notes
 
@@ -131,6 +216,10 @@ Better alternatives:
 - update derived state in response to a specific input change
 - memoize in a dedicated helper
 - preprocess on a background task before rendering
+
+### `@ObservationIgnored` should be surgical
+
+Use it for mutable non-render state such as caches, tasks, cancellables, services, and lazy dependencies that views do not read. Do not apply it to immutable `let` dependencies or blanket-ignore model state just to silence updates.
 
 ### `equatable()` is conditional guidance
 
@@ -145,6 +234,7 @@ Do not apply `equatable()` as a blanket fix for all redraws.
 When multiple smells appear together, prioritize in this order:
 1. Broad invalidation and observation fan-out
 2. Unstable identity and list churn
-3. Main-thread work during render
-4. Image decode or resize cost
-5. Layout and animation complexity
+3. Main-thread work during render or lifecycle modifiers
+4. Stored closures or manual bindings in hot paths
+5. Image decode or resize cost
+6. Layout and animation complexity

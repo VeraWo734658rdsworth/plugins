@@ -4,74 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Plugin Builder</title>
-    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="shell">
-      <section class="summary-view" data-view="summary">
-        <header class="hero">
-          <div class="hero-copy">
-            <div class="title-row">
-              <div class="plugin-mark" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M12 3 19 7v10l-7 4-7-4V7l7-4Z"></path>
-                  <path d="m5 7 7 4 7-4"></path>
-                  <path d="M12 11v10"></path>
-                </svg>
-              </div>
-              <div>
-                <h1 id="plugin-title">Loading plugin</h1>
-                <p id="plugin-description" class="subtitle"></p>
-              </div>
-            </div>
-          </div>
-          <div class="hero-actions">
-            <button id="view-plugin" class="quiet-button" type="button">View in Codex</button>
-            <button id="share-plugin" class="primary-button" type="button">
-              <svg class="button-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M12 16V4"></path>
-                <path d="m7 9 5-5 5 5"></path>
-                <path d="M20 15v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4"></path>
-              </svg>
-              <span>Share in Codex</span>
-            </button>
-          </div>
-        </header>
-
-        <section id="skills-section" class="content-section">
-          <h2>Skills</h2>
-          <div id="skills-list" class="resource-list"></div>
-        </section>
-
-        <section id="apps-section" class="content-section">
-          <h2>Apps</h2>
-          <div id="apps-list" class="resource-list"></div>
-        </section>
-
-        <section id="mcp-section" class="content-section">
-          <h2>MCP servers</h2>
-          <div id="mcp-list" class="resource-list"></div>
-        </section>
-
-        <section class="content-section">
-          <h2>Marketplaces</h2>
-          <div id="marketplaces-list" class="meta-list"></div>
-        </section>
-
-        <section class="content-section">
-          <h2>Local details</h2>
-          <div id="local-details" class="meta-list"></div>
-        </section>
-      </section>
-
-      <section class="detail-view" data-view="detail" hidden>
-        <button id="back-button" class="back-link" type="button">
-          <span aria-hidden="true">‹</span>
-          <span>Back to plugin summary</span>
-        </button>
-        <div id="detail-content"></div>
-      </section>
-    </main>
-    <script src="./app.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

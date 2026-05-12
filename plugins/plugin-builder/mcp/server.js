@@ -2,7 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const os = require("node:os");
 
-const APP_RESOURCE_URI = "ui://widget/plugin-builder-summary-v1.html";
+const APP_RESOURCE_URI = "ui://widget/plugin-builder-summary-v3.html";
 const WIDGET_MIME_TYPE = "text/html;profile=mcp-app";
 const pluginRoot = path.resolve(__dirname, "..");
 
@@ -179,7 +179,7 @@ function readSkills(pluginPath, manifest) {
         title,
         summary,
         pathLabel: relativeLabel(pluginPath, skillPath),
-        frontmatterSummary: parsed.fields.description || "No frontmatter summary provided.",
+        frontmatterSummary: parsed.fields.description || "No summary provided.",
         headings,
         preview: previewMarkdown(parsed.body),
       };
@@ -318,6 +318,7 @@ function readPluginSummary(args = {}) {
     marketplaces,
     localDetails: [
       { label: "Plugin path", value: pluginPath },
+      { label: "Manifest", value: manifestPath },
     ],
   };
 }
@@ -344,12 +345,10 @@ function widgetResourceMeta() {
 }
 
 function widgetHtml() {
-  const html = fs.readFileSync(path.join(pluginRoot, "app", "index.html"), "utf8");
-  const styles = fs.readFileSync(path.join(pluginRoot, "app", "styles.css"), "utf8");
-  const script = fs.readFileSync(path.join(pluginRoot, "app", "app.js"), "utf8");
-  return html
-    .replace('<link rel="stylesheet" href="./styles.css" />', `<style>\n${styles}\n</style>`)
-    .replace('<script src="./app.js"></script>', `<script>\n${script}\n</script>`);
+  return fs.readFileSync(
+    path.join(pluginRoot, "app", "dist", "plugin-builder-widget.html"),
+    "utf8",
+  );
 }
 
 function toolResult(summary) {

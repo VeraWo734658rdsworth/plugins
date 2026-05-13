@@ -5,6 +5,7 @@ import {
   Copy,
   FileText,
   FolderClosed,
+  Maximize2,
   Package2,
   Store,
   Upload,
@@ -73,6 +74,8 @@ type DetailSelection =
   | { kind: "app"; item: AppSummary }
   | { kind: "mcp"; item: McpSummary }
   | null;
+
+type DisplayMode = "inline" | "fullscreen";
 
 type PendingRpc = {
   resolve: (value: unknown) => void;
@@ -221,9 +224,35 @@ function notifyMcpApp(method: string, params: unknown = {}): void {
   });
 }
 
-async function connectMcpApp(): Promise<void> {
+async function requestFullscreenDisplayMode(): Promise<void> {
+  await requestMcpApp("ui/request-display-mode", {
+    mode: "fullscreen",
+  });
+}
+
+function displayModeFromHostResult(result: unknown): DisplayMode | null {
+  if (!result || typeof result !== "object" || !("hostContext" in result)) {
+    return null;
+  }
+  const hostContext = result.hostContext;
+  if (
+    !hostContext ||
+    typeof hostContext !== "object" ||
+    !("displayMode" in hostContext)
+  ) {
+    return null;
+  }
+  const displayMode = hostContext.displayMode;
+  return displayMode === "inline" || displayMode === "fullscreen"
+    ? displayMode
+    : null;
+}
+
+async function initializeDisplayMode(
+  onDisplayModeChange: (mode: DisplayMode) => void,
+): Promise<void> {
   try {
-    await requestMcpApp("ui/initialize", {
+    const initialization = await requestMcpApp("ui/initialize", {
       appCapabilities: {
         availableDisplayModes: ["inline", "fullscreen"],
       },
@@ -234,9 +263,9 @@ async function connectMcpApp(): Promise<void> {
       protocolVersion: "2026-01-26",
     });
     notifyMcpApp("ui/notifications/initialized");
-    await requestMcpApp("ui/request-display-mode", {
-      mode: "fullscreen",
-    });
+    onDisplayModeChange(displayModeFromHostResult(initialization) ?? "inline");
+    await requestFullscreenDisplayMode();
+    onDisplayModeChange("fullscreen");
   } catch {
     // The summary remains useful even when the host keeps the app inline.
   }
@@ -398,9 +427,13 @@ function DetailBlock({
 function SummaryScreen({
   model,
   onOpenDetail,
+  onRequestFullscreen,
+  showFullscreenButton,
 }: {
   model: PluginBuilderModel;
   onOpenDetail: (selection: DetailSelection) => void;
+  onRequestFullscreen: () => void;
+  showFullscreenButton: boolean;
 }): ReactElement {
   return (
     <main className="codex-app min-h-screen bg-canvas px-7 py-6 text-ink">
@@ -419,6 +452,17 @@ function SummaryScreen({
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-3">
+          {showFullscreenButton ? (
+            <button
+              type="button"
+              className="grid h-11 w-11 place-items-center rounded-md border border-line-strong bg-panel text-ink transition hover:bg-control"
+              aria-label="Open fullscreen"
+              title="Open fullscreen"
+              onClick={onRequestFullscreen}
+            >
+              <Maximize2 aria-hidden="true" className="h-4 w-4" />
+            </button>
+          ) : null}
           <button
             type="button"
             className="inline-flex h-11 items-center justify-center rounded-md border border-line-strong bg-panel px-4 text-[14px] font-medium text-ink transition hover:bg-control disabled:cursor-not-allowed disabled:opacity-45"
@@ -583,10 +627,9 @@ function DetailScreen({
 function PluginBuilderApp(): ReactElement {
   const [model, setModel] = useState<PluginBuilderModel>(() => readModel());
   const [detail, setDetail] = useState<DetailSelection>(null);
+  const [displayMode, setDisplayMode] = useState<DisplayMode>("inline");
 
   useEffect(() => {
-    connectMcpApp();
-
     const syncModel = (): void => {
       setModel(readModel());
     };
@@ -616,6 +659,7 @@ function PluginBuilderApp(): ReactElement {
 
     window.addEventListener("message", handleMessage);
     window.addEventListener("openai:set_globals", syncModel);
+    initializeDisplayMode(setDisplayMode);
     return () => {
       window.removeEventListener("message", handleMessage);
       window.removeEventListener("openai:set_globals", syncModel);
@@ -642,7 +686,18 @@ function PluginBuilderApp(): ReactElement {
   return selectedDetail ? (
     <DetailScreen detail={selectedDetail} onBack={() => setDetail(null)} />
   ) : (
-    <SummaryScreen model={model} onOpenDetail={setDetail} />
+    <SummaryScreen
+      model={model}
+      onOpenDetail={setDetail}
+      onRequestFullscreen={() => {
+        requestFullscreenDisplayMode()
+          .then(() => setDisplayMode("fullscreen"))
+          .catch(() => {
+            // The inline summary stays usable if the host declines fullscreen.
+          });
+      }}
+      showFullscreenButton={displayMode === "inline"}
+    />
   );
 }
 

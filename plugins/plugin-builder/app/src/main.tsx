@@ -224,10 +224,11 @@ function notifyMcpApp(method: string, params: unknown = {}): void {
   });
 }
 
-async function requestFullscreenDisplayMode(): Promise<void> {
-  await requestMcpApp("ui/request-display-mode", {
+async function requestFullscreenDisplayMode(): Promise<DisplayMode | null> {
+  const response = await requestMcpApp("ui/request-display-mode", {
     mode: "fullscreen",
   });
+  return displayModeFromHostResult(response);
 }
 
 function displayModeFromHostResult(result: unknown): DisplayMode | null {
@@ -264,8 +265,10 @@ async function initializeDisplayMode(
     });
     notifyMcpApp("ui/notifications/initialized");
     onDisplayModeChange(displayModeFromHostResult(initialization) ?? "inline");
-    await requestFullscreenDisplayMode();
-    onDisplayModeChange("fullscreen");
+    const confirmedDisplayMode = await requestFullscreenDisplayMode();
+    if (confirmedDisplayMode) {
+      onDisplayModeChange(confirmedDisplayMode);
+    }
   } catch {
     // The summary remains useful even when the host keeps the app inline.
   }
@@ -691,7 +694,11 @@ function PluginBuilderApp(): ReactElement {
       onOpenDetail={setDetail}
       onRequestFullscreen={() => {
         requestFullscreenDisplayMode()
-          .then(() => setDisplayMode("fullscreen"))
+          .then((confirmedDisplayMode) => {
+            if (confirmedDisplayMode) {
+              setDisplayMode(confirmedDisplayMode);
+            }
+          })
           .catch(() => {
             // The inline summary stays usable if the host declines fullscreen.
           });

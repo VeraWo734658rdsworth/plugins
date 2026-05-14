@@ -86,9 +86,13 @@ Try to read `SOUL.md` from the workspace root.
 
 **HeyGen app (preferred):** If the HeyGen app is available through the installed app integration, use it. The app authenticates via OAuth and runs against the user's existing HeyGen plan credits.
 
+**Auth triage (run immediately):** run `command -v heygen` and `heygen auth status`. If app/MCP auth fails but CLI auth is valid, continue in CLI mode for this run.
+
 **Local media limitation:** The current HeyGen app connector does NOT upload local files. Its photo/video/avatar tools accept only hosted HTTPS URLs or existing HeyGen `asset_id` values. Never pass `file://`, absolute local paths, or Codex attachment paths directly to app tools. For local photos/videos, first upload with `heygen asset create --file <path>` or `POST https://api.heygen.com/v3/assets` using `multipart/form-data`; then pass `{ "type": "asset_id", "asset_id": "..." }` to the app or CLI creation call. If no CLI/API upload path is available, ask the user for an HTTPS image URL or permission to continue with prompt-only creation.
 
 **CLI fallback:** If the app is not available AND the `heygen` binary runs cleanly (`heygen --version` exits 0), use it. Auth: `HEYGEN_API_KEY` env OR `heygen auth login` (persists to `~/.heygen/credentials`). If the CLI is missing, errors on `--version`, or auth is not set, silently skip it.
+
+In Codex desktop/sandboxed runs, CLI network calls may fail with DNS/network errors until network approval/escalation is granted. Retry with escalation when needed.
 
 **Neither available:** Only if the app is unavailable AND the CLI doesn't work, tell the user once: "To use this skill, connect the HeyGen app or install the HeyGen CLI: `curl -fsSL https://static.heygen.ai/cli/install.sh | bash` then `heygen auth login`." If the only missing capability is local media upload, say that local photos need an HTTPS URL or a CLI/API asset upload first.
 

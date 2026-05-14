@@ -79,6 +79,37 @@ Video Agent rejects `text/html` content type in the `files[]` array. Web pages (
 
 ---
 
+## App Auth Broken, CLI Auth Works
+
+**Symptom:** App/MCP calls fail with token invalid/expired errors, while CLI commands work on the same machine.
+
+**Fix:** Run:
+```bash
+command -v heygen
+heygen auth status
+```
+If CLI auth is valid, continue in CLI mode for the current run.
+
+---
+
+## Sandbox DNS/Network Failures in Codex
+
+**Symptom:** CLI commands fail with DNS/network errors despite valid auth.
+
+**Root Cause:** Network-restricted sandbox execution.
+
+**Fix:** Rerun the same command with network approval/escalation.
+
+---
+
+## CLI Telemetry Noise in Sandboxed Runs
+
+**Symptom:** Analytics/telemetry DNS warnings (for example PostHog) clutter command output.
+
+**Fix:** If supported by the installed CLI version, disable analytics for agent runs to reduce noise. If not supported, ignore telemetry warnings unless command exit status indicates failure.
+
+---
+
 ## Avatar Not Ready for Video Generation
 
 **Symptom:** Video generation fails or produces errors immediately after creating a new avatar. The avatar exists in the HeyGen dashboard but videos referencing it fail.

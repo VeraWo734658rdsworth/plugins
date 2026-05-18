@@ -120,7 +120,7 @@ heygen auth status
 
 **Symptom:** A public look appears selectable but `video create` fails with compatibility errors (for example, unsupported Avatar IV generation).
 
-**Fix:** Before use, require `supported_api_engines` to include `avatar_iv` or `avatar_v`. Prefer `photo_avatar` looks when possible.
+**Fix:** Before use, require `supported_api_engines` to include `avatar_iv` or `avatar_v`.
 
 ---
 
@@ -137,38 +137,6 @@ heygen auth status
 **Symptom:** `heygen video create --wait` appears stuck with little/no stdout for minutes.
 
 **Fix:** Silence is expected. Keep waiting, or switch to submit+poll mode (`create` then `get`) if progress feedback is required.
-
----
-
-## Duration Drift Breaks HyperFrames Timing
-
-**Symptom:** Rendered HeyGen duration differs from planned timeline duration.
-
-**Fix:** After download, run:
-```bash
-ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 assets/heygen-avatar.mp4
-```
-Then retime HyperFrames duration-sensitive values (`data-duration`, scene exits, audio/captions).
-
----
-
-## HyperFrames Audio Wiring
-
-**Symptom:** Embedded HeyGen clip plays inconsistently when only a `<video>` tag is used.
-
-**Fix:** Use muted video + separate audio element:
-```html
-<video src="./assets/heygen-avatar.mp4" muted playsinline></video>
-<audio src="./assets/heygen-avatar.mp4"></audio>
-```
-
----
-
-## CLI Telemetry Noise in Sandboxed Runs
-
-**Symptom:** Analytics/telemetry DNS warnings (for example PostHog) clutter command output.
-
-**Fix:** If supported by the installed CLI version, disable analytics for agent runs to reduce noise. If not supported, ignore telemetry warnings unless command exit status indicates failure.
 
 ---
 

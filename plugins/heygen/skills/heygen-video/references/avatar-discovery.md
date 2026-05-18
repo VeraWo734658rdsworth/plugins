@@ -104,7 +104,6 @@ heygen avatar looks list --group-id <group_id> --limit 10
 Before using a public look for v3 video generation, verify compatibility:
 - `supported_api_engines` must include `avatar_iv` or `avatar_v`.
 - If missing/incompatible, reject that look and continue browsing.
-- Prefer `photo_avatar` looks for v3 reliability when available.
 
 Many public looks share duplicate names. Never identify a look by name alone. Present and confirm using:
 - name

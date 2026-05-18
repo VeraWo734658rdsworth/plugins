@@ -610,17 +610,11 @@ Stuck in `thinking` >15 min with no progress → flag to user.
 
 1. Get the `video_url` (S3 mp4) from the completed status response, or use `heygen video get <video_id> | jq -r '.data.video_page_url'` for the shareable link.
 2. Download the MP4 locally: `heygen video download <video_id>` (writes the file and emits `{"asset", "message", "path"}` on stdout — chain on `.path`).
-3. Measure real duration before downstream wiring via `ffprobe` (see troubleshooting reference for exact command).
+3. Verify final duration if precise downstream timing matters.
 4. Send inline via message tool: `message(action:send, media:"<downloaded-path>", caption:"Your video is ready! 🎬\n📊 Duration: [actual]s vs [target]s ([percentage]%)")`. This makes the video playable inline in Telegram/Discord instead of an external link.
 5. Also share the HeyGen dashboard link for editing: `https://app.heygen.com/videos/<video_id>`
 
 Always report duration accuracy. Clean up downloaded files after sending.
-
-### HyperFrames Handoff
-
-Use muted `<video>` plus a separate `<audio>` element for the same MP4, then retime duration-sensitive fields to the actual `ffprobe` duration. Snippet and command are in `references/troubleshooting.md`.
-
----
 
 ## Deliver
 

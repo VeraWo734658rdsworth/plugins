@@ -1,7 +1,9 @@
 {
   "apps": {
     "alpaca": {
-      "id": "connector_691f721a77bc8191be115b65c85075c0"
+      "id": "connector_691f721a77bc8191be115b65c85075c0",
+      "description": "Alpaca trading plugin connector",
+      "enabled": true
     }
   }
 }

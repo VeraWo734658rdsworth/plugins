@@ -5,7 +5,9 @@
       "description": "Alpaca trading plugin connector",
       "enabled": true,
       "sandbox_mode": true,
-      "notes": "Using paper trading endpoint for personal testing - do not enable live trading without review"
+      "notes": "Using paper trading endpoint for personal testing - do not enable live trading without review",
+      "timeout_seconds": 30,
+      "retry_on_failure": true
     }
   }
 }

@@ -30,6 +30,7 @@ Highlighted richer examples in this repo include:
 > - Draft a minimal `plugin.json` manifest for my Stripe + Supabase side project, modeled after `plugins/build-web-apps`.
 > - Cross-reference the EAS hook examples in `plugins/expo/hooks.json` with the Codex Run docs to map out the action lifecycle.
 > - Look into how `plugins/netlify` structures its MCP config — may be useful for hosting the Stripe + Supabase plugin once it's working.
+> - ✅ Confirmed: Supabase does have an official MCP server (`@supabase/mcp-server-supabase`). Use that instead of rolling a custom one.
 >
 > **Notes to self:**
 > - The `skills/` directory in `plugins/build-web-apps` has separate files per workflow; keep my own skills granular the same way.

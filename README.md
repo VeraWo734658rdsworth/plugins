@@ -21,3 +21,7 @@ Highlighted richer examples in this repo include:
 
 > **Personal fork notes:** I'm primarily studying the `plugins/build-web-apps` and `plugins/expo` examples.
 > Upstream repo: [openai/plugins](https://github.com/openai/plugins)
+>
+> **Study log:**
+> - `plugins/build-web-apps` — paying close attention to the payments and database workflow skills; want to adapt these for a side project using Stripe + Supabase.
+> - `plugins/expo` — exploring EAS workflow hooks to understand how Codex Run actions are structured before writing my own.

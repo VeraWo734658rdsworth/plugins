@@ -3,7 +3,9 @@
     "alpaca": {
       "id": "connector_691f721a77bc8191be115b65c85075c0",
       "description": "Alpaca trading plugin connector",
-      "enabled": true
+      "enabled": true,
+      "sandbox_mode": true,
+      "notes": "Using paper trading endpoint for personal testing - do not enable live trading without review"
     }
   }
 }

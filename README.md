@@ -16,3 +16,8 @@ Highlighted richer examples in this repo include:
 - `plugins/build-web-apps` for deployment, UI, payments, and database workflows
 - `plugins/expo` for Expo and React Native apps, SDK upgrades, EAS workflows, and Codex Run actions
 - `plugins/netlify`, `plugins/remotion`, and `plugins/google-slides` for additional public skill- and MCP-backed plugin bundles
+
+---
+
+> **Personal fork notes:** I'm primarily studying the `plugins/build-web-apps` and `plugins/expo` examples.
+> Upstream repo: [openai/plugins](https://github.com/openai/plugins)

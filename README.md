@@ -25,3 +25,7 @@ Highlighted richer examples in this repo include:
 > **Study log:**
 > - `plugins/build-web-apps` — paying close attention to the payments and database workflow skills; want to adapt these for a side project using Stripe + Supabase.
 > - `plugins/expo` — exploring EAS workflow hooks to understand how Codex Run actions are structured before writing my own.
+>
+> **Next steps:**
+> - Draft a minimal `plugin.json` manifest for my Stripe + Supabase side project, modeled after `plugins/build-web-apps`.
+> - Cross-reference the EAS hook examples in `plugins/expo/hooks.json` with the Codex Run docs to map out the action lifecycle.
